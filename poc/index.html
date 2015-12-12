@@ -1,0 +1,46 @@
+<html>
+<head>
+	<title>Object Oriented Javascript MVC</title>
+	<script type="text/javascript">
+	// function require(filename){
+	// 	// var xhttp = new XMLHttpRequest();
+ //  // 		xhttp.onreadystatechange = function() {
+	// 	// 	if (xhttp.readyState == 4 && xhttp.status == 200) {
+	// 	//   		console.log(xhttp.responseText);
+	// 	// 	}
+ //  // 		};
+	// 	// xhttp.open("GET", filename, true);
+	// 	// xhttp.send();
+		
+	// 	//console.log(file_content);
+	// 	//parsing code goes here
+
+	// 	if(typeof(Person) !== 'undefined')
+	// 		console.log("Person class already exists");
+
+
+		
+	// }
+	// require("Person.js");
+	var file_content = "Class Person{var id;function getId(){return this.id;}}";
+
+	//string uncompressed
+	Person = function(){
+		this.id = 0;
+		this.getId = function(){
+			return this.id;
+		}
+	}
+	var person = new Person();
+	person.id = 12;
+	console.log(person.getId());
+
+	//string compressed
+	a=function(){this.aa=0;this.ab=function(){return this.aa;}};var b=new a();b.aa=12;
+	console.log(b.ab());
+	</script>
+</head>
+<body>
+	
+</body>
+</html>
