@@ -1,46 +1,29 @@
 <html>
 <head>
 	<title>Object Oriented Javascript MVC</title>
-	<script type="text/javascript">
-	// function require(filename){
-	// 	// var xhttp = new XMLHttpRequest();
- //  // 		xhttp.onreadystatechange = function() {
-	// 	// 	if (xhttp.readyState == 4 && xhttp.status == 200) {
-	// 	//   		console.log(xhttp.responseText);
-	// 	// 	}
- //  // 		};
-	// 	// xhttp.open("GET", filename, true);
-	// 	// xhttp.send();
-		
-	// 	//console.log(file_content);
-	// 	//parsing code goes here
-
-	// 	if(typeof(Person) !== 'undefined')
-	// 		console.log("Person class already exists");
-
-
-		
-	// }
-	// require("Person.js");
-	var file_content = "Class Person{var id;function getId(){return this.id;}}";
-
-	//string uncompressed
-	Person = function(){
-		this.id = 0;
-		this.getId = function(){
-			return this.id;
-		}
-	}
-	var person = new Person();
-	person.id = 12;
-	console.log(person.getId());
-
-	//string compressed
-	a=function(){this.aa=0;this.ab=function(){return this.aa;}};var b=new a();b.aa=12;
-	console.log(b.ab());
-	</script>
+	<link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
+	<script type="text/javascript" src="oojsmvc.js"></script>
 </head>
 <body>
-	
+	<div class="container">
+		<br><br>
+		<div class="jumbotron">
+			<h2>Object Oriented Javascript MVC</h2>
+			<form>
+				<div class="form-group">
+					<label for="email">Email:</label>
+					<input type="email" class="form-control" placeholder="Enter Email Address" id="email" />
+				</div>
+				<div class="form-group">
+					<label for="password">Password:</label>
+					<input class="form-control" type="password" id="password" placeholder="Enter Password"/>
+				</div>
+				<div class="form-group">
+					<inupt class="btn btn-primary btn-block" type="submit" value="submit">Submit</inupt>
+				</div>
+			</form>
+
+		</div>
+	</div>
 </body>
 </html>
