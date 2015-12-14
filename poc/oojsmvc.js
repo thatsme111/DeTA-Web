@@ -20,9 +20,19 @@ oojsmvc.EmailModule = {
 	onclick:function(){
 		console.log(this.curr_instance.value);
 	},
-}
+};
 document.getElementById('email').addEventListener(oojsmvc.OnClickListener.event,function(){
 	oojsmvc.OnClickListener.eventHandler(oojsmvc.EmailModule);
+});
+oojsmvc.SubmitModule = {
+	curr_instance: document.getElementById('submit'),
+	id : "submit",
+	onclick:function(){
+		console.log(this.curr_instance.id);
+	},
+};
+document.getElementById('submit').addEventListener(oojsmvc.OnClickListener.event,function(){
+	oojsmvc.OnClickListener.eventHandler(oojsmvc.SubmitModule);
 });
 
 });

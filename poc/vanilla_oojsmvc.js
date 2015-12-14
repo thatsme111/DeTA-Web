@@ -12,9 +12,7 @@ oojsmvc.OnClickListener = {
 };
 
 window.addEventListener("load", function(){
-
 //::generated code::
-
 });
 
 })();

@@ -56,7 +56,7 @@ class OOJSMVC{
 		//replace this with curr_instance;
 		$class_content = str_replace("this", "this.curr_instance", $class_content);
 
-		$javascript .= $class_content;
+		$javascript .= "\n".$class_content.";";
 
 		//set implements function to appropriate event handler
 		$index_implements = 0;
@@ -79,6 +79,7 @@ class OOJSMVC{
 
 $output_file = file_get_contents("vanilla_oojsmvc.js");
 $generated_code = OOJSMVC::getJavascript("module/EmailModule.js");
+$generated_code .= OOJSMVC::getJavascript("module/SubmitModule.js");
 $output_file = str_replace("//::generated code::", $generated_code, $output_file);
 file_put_contents("oojsmvc.js", $output_file);
 
