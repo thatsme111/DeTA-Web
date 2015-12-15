@@ -2,10 +2,16 @@
 
 class OOJSMVC{
 
+	public static $module_names = [];
+
 	public static function getJavascript($filename){
 		$file_content = file_get_contents($filename);
 		$class_info = explode(" ", substr($file_content, 0, strpos($file_content, "\n")));
 		$function_name = $class_info[1];
+
+		//add className to module_names
+		array_push(OOJSMVC::$module_names, $function_name);
+
 		$javascript = "oojsmvc.$function_name = ";
 			
 		$id = "";	
@@ -75,11 +81,26 @@ class OOJSMVC{
 		return $javascript;
 	}
 
+	public static function replaceModuleNames($generated_code){
+		$output = $generated_code;
+		foreach (OOJSMVC::$module_names as $key => $value) {
+
+			$dummy = $value[0].".".substr($value, 1);
+			$output = str_replace(".".$value, $dummy, $output);
+			$output = str_replace($value, "oojsmvc.".$value.".curr_instance", $output);
+			$output = str_replace($dummy, ".".$value, $output);
+		}
+		return $output;
+	}
+
 }
 
+
+
 $output_file = file_get_contents("vanilla_oojsmvc.js");
-$generated_code = OOJSMVC::getJavascript("module/EmailModule.js");
+$generated_code  = OOJSMVC::getJavascript("module/EmailModule.js");
 $generated_code .= OOJSMVC::getJavascript("module/SubmitModule.js");
+$generated_code  = OOJSMVC::replaceModuleNames($generated_code);
 $output_file = str_replace("//::generated code::", $generated_code, $output_file);
 file_put_contents("oojsmvc.js", $output_file);
 
