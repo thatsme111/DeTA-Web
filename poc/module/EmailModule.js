@@ -7,11 +7,11 @@ Class EmailModule extends FormModule implements OnClickListener{
 	function onclick(){
 		console.log(SubmitModule.id);
 	}
-	function isValid(){
-		atpos = this.value.indexOf("@");
-		dotpos = this.value.lastIndexOf(".");
-		if (atpos < 1 || ( dotpos - atpos < 2 ))
-			return false;
-		return true;
-	}
+	// function isValid(){
+	// 	atpos = this.value.indexOf("@");
+	// 	dotpos = this.value.lastIndexOf(".");
+	// 	if (atpos < 1 || ( dotpos - atpos < 2 ))
+	// 		return false;
+	// 	return true;
+	// }
 }

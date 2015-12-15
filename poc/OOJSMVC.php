@@ -21,6 +21,15 @@ class OOJSMVC{
 		$class_content = substr($file_content, strpos($file_content, "{"));
 		$isConstructorDefined = false;
 
+
+		//remove comments
+		foreach(preg_split("/((\r?\n)|(\r\n?))/", $class_content) as $line){
+
+    		if(substr(trim($line), 0, 2)=="//"){
+    			$class_content = str_replace($line, "", $class_content);
+    		}
+		}
+
 		while($index_var && $index_function){	
 			//convert properties
 			$index_var = strpos($class_content, "var", $index_var+1);
@@ -146,5 +155,5 @@ $generated_code .= OOJSMVC::getJavascript("module/SubmitModule.js");
 $generated_code  = OOJSMVC::replaceModuleNames($generated_code);
 $output_file = str_replace("//::generated code::", $generated_code, $output_file);
 file_put_contents("oojsmvc.js", $output_file);
-
+echo $output_file;
 ?>

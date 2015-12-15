@@ -16,26 +16,38 @@ oojsmvc.EmailModule =
 {
 	curr_instance: document.getElementById('email'),
 	id : "email",
-	defaultValue : "example@domain.com",
+
 	EmailModule:function(){
-		this.curr_instance.value = oojsmvc.EmailModule.defaultValue;
+		this.curr_instance.value = "example@domain.com";
 	},
 	onclick:function(){
 		console.log(oojsmvc.SubmitModule.curr_instance.id);
 	},
+
+
+
+
+
+
+
 };
 oojsmvc.EmailModule.EmailModule();
-
-document.getElementById('email').addEventListener(oojsmvc.OnClickListener.event,function(){
-	oojsmvc.OnClickListener.eventHandler(oojsmvc.EmailModule);
-});oojsmvc.SubmitModule = 
+oojsmvc.SubmitModule = 
 {
 	curr_instance: document.getElementById('submit'),
 	id : "submit",
-	onclick:function(){
+	SubmitModule:function(){
 		console.log(oojsmvc.EmailModule.curr_instance.value);
+
+
+
+
+	},
+	onclick:function(){
+		console.log(this.curr_instance.value);
 	},
 };
+oojsmvc.SubmitModule.SubmitModule();
 
 document.getElementById('submit').addEventListener(oojsmvc.OnClickListener.event,function(){
 	oojsmvc.OnClickListener.eventHandler(oojsmvc.SubmitModule);
