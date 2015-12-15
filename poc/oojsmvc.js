@@ -17,10 +17,15 @@ oojsmvc.EmailModule =
 	curr_instance: document.getElementById('email'),
 	id : "email",
 	defaultValue : "example@domain.com",
+	EmailModule:function(){
+		this.curr_instance.value = oojsmvc.EmailModule.defaultValue;
+	},
 	onclick:function(){
 		console.log(oojsmvc.SubmitModule.curr_instance.id);
 	},
 };
+oojsmvc.EmailModule.EmailModule();
+
 document.getElementById('email').addEventListener(oojsmvc.OnClickListener.event,function(){
 	oojsmvc.OnClickListener.eventHandler(oojsmvc.EmailModule);
 });oojsmvc.SubmitModule = 
@@ -31,6 +36,7 @@ document.getElementById('email').addEventListener(oojsmvc.OnClickListener.event,
 		console.log(oojsmvc.EmailModule.curr_instance.value);
 	},
 };
+
 document.getElementById('submit').addEventListener(oojsmvc.OnClickListener.event,function(){
 	oojsmvc.OnClickListener.eventHandler(oojsmvc.SubmitModule);
 });
