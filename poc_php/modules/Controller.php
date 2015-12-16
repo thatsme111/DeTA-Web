@@ -4,7 +4,7 @@ require 'modules.php';
 
 $javascript = OOJSMVC::generateJavascript();
 // echo print_r($javascript, true);
-
+echo $javascript;
 
 
 

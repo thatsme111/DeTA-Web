@@ -1,8 +1,18 @@
 <?php 
 
+// abstract class CoreEventListener{
+
+// }
+
 interface OnClickListener{
+	const event = "click";
 	public function onClick();
 }
+
+class console{
+	public static function log($data){}
+}
+
 
 class OOJSMVC{
 	public static function generateJavascript(){
@@ -11,62 +21,89 @@ class OOJSMVC{
 		$javascript = "";
 
 		foreach ($class_names as $key => $value) {
-			$class = new $value;
+			$class = new $value; $class->onClick();
 
 			//create property_block
 			$property_block = "";
 			$instance = new $class;
+
+			//add element property
+			if(isset($instance->id)){
+				$property_block .= "\t\tthis.element = document.getElementById('".$instance->id."');\n";
+			}
+			
+			//add userdefined properties
 			foreach ($class as $key => $value) {
 				if(gettype($instance->$key) == "string"){
-					$property_block .= "\tthis.$key=\"".$instance->$key."\";\n";
+					$property_block .= "\t\tthis.$key=\"".$instance->$key."\";\n";
 				}
 			}
-			//echo $property_block;
 
 			//create method block
 			$method_block = "";
 			$methods = get_class_methods($class);
+			$isConstructorDefined = false;
 			foreach ($methods as $method) {
-				if (substr($method, 0, 1)!="_") {
+				if(substr($method, 0, 1)!="_"){
 					$method_body = get_class_method_body("EmailModule", "onClick");
 					$method_body = OOJSMVC::generateJavascriptFromFunctionString($method_body);
-					$method_block .= "\tthis.$method = function(){\n$method_body\n\t}\n";
+					$method_block .= "\t\tthis.$method = function(){\n\t$method_body\n\t\t}\n";
 				}
 			}
-			// echo print_r(, true);
+			$javascript = "function ".get_class($class)."(){\n".$property_block.$method_block."\t}\n";
 
-			// echo print_r($class, true);
-			// $method_body = 
-			// 
+			//add create object and append it to window.oojsmvc
+			$javascript .= "\twindow.oojsmvc.".get_class($class)."= new ".get_class($class)."();";
 
-
-			$javascript = "function ".get_class($class)."(){\n".$property_block.$method_block."}";
-			echo $javascript;
+			// echo $javascript;
 			$classes[] = $class;
-			
 		}
-		return $classes;
+
+		//add to vanilla javascript
+		$output_file = file_get_contents("../vanilla_oojsmvc.js");
+		$output_file = str_replace("/*::generated code::*/", $javascript, $output_file);
+		return $output_file;
 	}
-	public static function generateJavascriptFromFunctionString($function_string){
-		
-		$function_string = "<?php ".$function_string." ?>";
-		// echo $function_string;
-		$tokens = token_get_all($function_string);
-		foreach ($tokens as $token) {
-			echo $token[0]." ".$token[1]."\n";
+
+	public static function generateJavascriptFromFunctionString($method_body){
+		$tokens = token_get_all("<?php ".$method_body." ?>");
+		$javascript = "";
+		//echo "token name:".token_name(310)."\n";
+		foreach ($tokens as $token) {  
+			// echo print_r($token, true);
+			if(is_int($token[0])){
+				// echo token_name($token[0])." ".$token[1]."\n";
+				switch($token[0]){
+					case T_OPEN_TAG:
+						break;					
+					case T_CLOSE_TAG:
+						break;
+					case T_VARIABLE:
+						if($token[1] == "\$this")
+							$javascript .= "this.element";
+						break;
+					case T_DOUBLE_COLON:
+						$javascript .= ".";
+						break;
+					case T_OBJECT_OPERATOR:
+						$javascript .= ".";
+						break;	
+					default:
+						if(isset($token[1]))
+							$javascript .= $token[1];
+				}
+			}else{ //token is not array
+				$javascript .= $token;
+			}
 		}
-		return $function_string;
+		return $javascript;
 	}
 }
 
 
-class console{
-	public static function log($data){
-		return $data;
-	}
-}
 
 class CoreFormModule{
+	public $value = "";
 	public function _generateJavascript(){
 		echo get_class_methods($this);
 	}
