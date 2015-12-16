@@ -1,12 +1,16 @@
 <?php 
 
-// abstract class CoreEventListener{
-
-// }
-
 interface OnClickListener{
-	const event = "click";
+	const event_OnClickListener = "click";
+	const handler_OnClickListener = "onClick";
 	public function onClick();
+}
+
+
+interface OnChangeListener{
+	const event_OnChangeListener = "change";
+	const handler_OnChangeListener = "onChange";
+	public function onChange();
 }
 
 class console{
@@ -34,7 +38,8 @@ class OOJSMVC{
 			
 			//add userdefined properties
 			foreach ($class as $key => $value) {
-				if(gettype($instance->$key) == "string"){
+
+				if(gettype($instance->$key) == "string" && substr($key, 0, 1) != "_"){
 					$property_block .= "\t\tthis.$key=\"".$instance->$key."\";\n";
 				}
 			}
@@ -53,7 +58,10 @@ class OOJSMVC{
 			$javascript = "function ".get_class($class)."(){\n".$property_block.$method_block."\t}\n";
 
 			//add create object and append it to window.oojsmvc
-			$javascript .= "\twindow.oojsmvc.".get_class($class)."= new ".get_class($class)."();";
+			$javascript .= "\twindow.oojsmvc.".get_class($class)."= new ".get_class($class)."();\n";
+
+			//add implements code
+			$javascript .= $instance->_javascript;
 
 			// echo $javascript;
 			$classes[] = $class;
@@ -104,6 +112,19 @@ class OOJSMVC{
 
 class CoreFormModule{
 	public $value = "";
+	public $_javascript = "";
+	public function _initialize() {
+		foreach (class_implements($this) as $interface_name) {
+			$reflectionClass = new ReflectionClass ($interface_name);
+			$constants_array = $reflectionClass->getConstants();
+			$event = $constants_array["event_$interface_name"];
+			$handler = $constants_array["handler_$interface_name"];
+			$this->_javascript = "";
+			$this->_javascript .= "\twindow.oojsmvc.EmailModule.element.addEventListener('$event', function(){\n";
+			$this->_javascript .= "\t\twindow.oojsmvc.EmailModule.$handler();\n";
+			$this->_javascript .= "\t});\n";
+		}
+	}
 	public function _generateJavascript(){
 		echo get_class_methods($this);
 	}
