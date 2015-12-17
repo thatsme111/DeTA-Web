@@ -1,16 +1,16 @@
 <?php 
 
-class EmailModule extends CoreFormModule implements OnCLickListener{
-	public $id = "email";
+class EmailModule extends CoreFormModule implements OnInputListener{
+	public $_id = "email";
 
 	public function __construct() {
-		parent::_initialize();
 		$this->value = "example@domain.com";
 	}
 
-	public function onClick(){
+	public function onInput(){
 		console::log($this->value);
 	}
+
 }
 
 

@@ -13,6 +13,12 @@ interface OnChangeListener{
 	public function onChange();
 }
 
+interface OnInputListener{
+	const event_OnInputListener = "input";
+	const handler_OnInputListener = "onInput";
+	public function onInput();
+}
+
 class console{
 	public static function log($data){}
 }
@@ -25,22 +31,23 @@ class OOJSMVC{
 		$javascript = "";
 
 		foreach ($class_names as $key => $value) {
-			$class = new $value; $class->onClick();
+			$class = new $value;
 
 			//create property_block
 			$property_block = "";
 			$instance = new $class;
+			$instance->_initialize();
 
 			//add element property
-			if(isset($instance->id)){
-				$property_block .= "\t\tthis.element = document.getElementById('".$instance->id."');\n";
+			if(isset($instance->_id)){
+				$property_block .= "\t\tthis.element = document.getElementById('".$instance->_id."');\n";
 			}
 			
 			//add userdefined properties
 			foreach ($class as $key => $value) {
 
 				if(gettype($instance->$key) == "string" && substr($key, 0, 1) != "_"){
-					$property_block .= "\t\tthis.$key=\"".$instance->$key."\";\n";
+					$property_block .= "\t\tthis.element.$key=\"".$instance->$key."\";\n";
 				}
 			}
 
@@ -50,7 +57,7 @@ class OOJSMVC{
 			$isConstructorDefined = false;
 			foreach ($methods as $method) {
 				if(substr($method, 0, 1)!="_"){
-					$method_body = get_class_method_body("EmailModule", "onClick");
+					$method_body = get_class_method_body("EmailModule", $method);
 					$method_body = OOJSMVC::generateJavascriptFromFunctionString($method_body);
 					$method_block .= "\t\tthis.$method = function(){\n\t$method_body\n\t\t}\n";
 				}
@@ -113,13 +120,16 @@ class OOJSMVC{
 class CoreFormModule{
 	public $value = "";
 	public $_javascript = "";
+	
 	public function _initialize() {
+		$this->_javascript = "";
 		foreach (class_implements($this) as $interface_name) {
+			
 			$reflectionClass = new ReflectionClass ($interface_name);
 			$constants_array = $reflectionClass->getConstants();
 			$event = $constants_array["event_$interface_name"];
 			$handler = $constants_array["handler_$interface_name"];
-			$this->_javascript = "";
+			
 			$this->_javascript .= "\twindow.oojsmvc.EmailModule.element.addEventListener('$event', function(){\n";
 			$this->_javascript .= "\t\twindow.oojsmvc.EmailModule.$handler();\n";
 			$this->_javascript .= "\t});\n";
