@@ -19,6 +19,12 @@ interface OnInputListener{
 	public function onInput();
 }
 
+interface OnSubmitListener{
+	const event_OnSubmitListener = "submit";
+	const handler_OnSubmitListener = "onSubmit";
+	public function onSubmit($event);
+}
+
 class console{
 	public static function log($data){}
 }
@@ -57,20 +63,20 @@ class OOJSMVC{
 			$isConstructorDefined = false;
 			foreach ($methods as $method) {
 				if(substr($method, 0, 1)!="_"){
-					$method_body = get_class_method_body("EmailModule", $method);
+					$method_body = get_class_method_body(get_class($instance), $method);
 					$method_body = OOJSMVC::generateJavascriptFromFunctionString($method_body);
-					$method_block .= "\t\tthis.$method = function(){\n\t$method_body\n\t\t}\n";
+					$method_block .= "\t\tthis.$method = function(".get_class_method_parameter(get_class($instance), $method)."){\n\t$method_body\n\t\t}\n";
 				}
 			}
-			$javascript = "function ".get_class($class)."(){\n".$property_block.$method_block."\t}\n";
+			$javascript .= "function ".get_class($class)."(){\n".$property_block.$method_block."\t}\n";
 
 			//add create object and append it to window.oojsmvc
 			$javascript .= "\twindow.oojsmvc.".get_class($class)."= new ".get_class($class)."();\n";
 
 			//add implements code
 			$javascript .= $instance->_javascript;
-
-			// echo $javascript;
+			
+			
 			$classes[] = $class;
 		}
 
@@ -96,6 +102,8 @@ class OOJSMVC{
 					case T_VARIABLE:
 						if($token[1] == "\$this")
 							$javascript .= "this.element";
+						else
+							$javascript .= substr($token[1], 1);
 						break;
 					case T_DOUBLE_COLON:
 						$javascript .= ".";
@@ -116,8 +124,12 @@ class OOJSMVC{
 }
 
 
+class CoreEvent{
+	public function preventDefault(){}
+}
 
-class CoreFormModule{
+
+class CoreModule{
 	public $value = "";
 	public $_javascript = "";
 	
@@ -130,8 +142,8 @@ class CoreFormModule{
 			$event = $constants_array["event_$interface_name"];
 			$handler = $constants_array["handler_$interface_name"];
 			
-			$this->_javascript .= "\twindow.oojsmvc.EmailModule.element.addEventListener('$event', function(){\n";
-			$this->_javascript .= "\t\twindow.oojsmvc.EmailModule.$handler();\n";
+			$this->_javascript .= "\twindow.oojsmvc.".get_class($this).".element.addEventListener('$event', function(event){\n";
+			$this->_javascript .= "\t\twindow.oojsmvc.".get_class($this).".$handler(event);\n";
 			$this->_javascript .= "\t});\n";
 		}
 	}
@@ -149,6 +161,17 @@ function get_class_method_body($class, $function){
   $source = file($filename);
   $body = implode("", array_slice($source, $start_line, $length));
   return $body;
+}
+
+function get_class_method_parameter($class, $function){
+	$r = new ReflectionMethod($class, $function);
+	$params = $r->getParameters();
+	
+	$params_string = "";
+	foreach ($params as $param) {
+		$params_string .= $param->name.",";
+	}
+	return substr($params_string, 0, strlen($params_string)-1);
 }
 
 function file_get_php_classes($filepath) {

@@ -1,6 +1,8 @@
 <?php 
 
-class EmailModule extends CoreFormModule implements OnInputListener{
+
+
+class EmailModule extends CoreModule implements OnInputListener{
 	public $_id = "email";
 
 	public function __construct() {
@@ -13,5 +15,20 @@ class EmailModule extends CoreFormModule implements OnInputListener{
 
 }
 
+class SubmitModule extends CoreModule implements OnClickListener{
+	public $_id = "submit";
+	public $_type = "submit";
+
+	public function onClick(){
+		console::log("submit module onclick");
+	}
+}
+
+class LoginFormModule extends CoreModule implements OnSubmitListener{
+	public $_id = "login_form";
+	public function onSubmit($event){
+		console::log($event);
+	}	
+}
 
 ?>
