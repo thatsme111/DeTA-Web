@@ -1,10 +1,14 @@
 package com.thatsme;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Date;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
 
 public class HTTPServer {
 	
@@ -13,19 +17,50 @@ public class HTTPServer {
 	
 	private ServerSocket serverSocket;
 	private Socket client;
+	private OutputStream clientOutputStream;
+	private InputStream clientInputStream;
+	
+	public void initializeGUI(){
+		JFrame frame = new JFrame("Server");
+		frame.setLayout(null);
+		
+		JButton button = new JButton("click");
+		button.setLocation(0, 0);
+		button.setSize(100, 100);
+		frame.add(button);
+		button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				try {
+					clientOutputStream.write("<p>paragraph</p>".getBytes());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		frame.setSize(400, 400);
+		frame.setVisible(true);
+	}
 	
 	public HTTPServer() {
+		initializeGUI();
 		try {
 			this.serverSocket = new ServerSocket(PORT);
 			System.out.println("server started...");
+			
 			this.client = this.serverSocket.accept();
+			this.clientInputStream = this.client.getInputStream();
+			this.clientOutputStream = this.client.getOutputStream();
+			
 			System.out.println("client connected :"+client);
-			InputStream inputStream = this.client.getInputStream();
+			
+			//reading current request
 			byte[] buffer = new byte[1024];
-			inputStream.read(buffer);
+			this.clientInputStream.read(buffer);
 			System.out.println(new String(buffer));
 			
-			OutputStream outputStream = this.client.getOutputStream();
 			//adding headers
 			String responseString = 
 					"HTTP/1.x 200 OK\r\n"
@@ -36,7 +71,7 @@ public class HTTPServer {
 			responseString += "<h1>ThatsME</h1>"; 
 			
 			System.out.println("Response:\n"+responseString);
-			outputStream.write(responseString.getBytes());
+			this.clientOutputStream.write(responseString.getBytes());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

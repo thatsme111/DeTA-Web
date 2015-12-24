@@ -1,7 +1,5 @@
 <?php 
 
-
-
 class EmailModule extends CoreModule implements OnInputListener{
 	public $_id = "email";
 
@@ -27,7 +25,10 @@ class SubmitModule extends CoreModule implements OnClickListener{
 class LoginFormModule extends CoreModule implements OnSubmitListener{
 	public $_id = "login_form";
 	public function onSubmit($event){
-		console::log($event);
+		$event.preventDefault();
+		$email = new EmailModule;
+		$test = EmailModule::$value;
+		console::log("login form onsubmit:".$test);
 	}	
 }
 

@@ -31,9 +31,12 @@ class console{
 
 
 class OOJSMVC{
+
+	public static $class_names;
+
 	public static function generateJavascript(){
-		$class_names = file_get_php_classes("modules.php");
-		$classes = array();
+		OOJSMVC::$class_names = file_get_php_classes("modules.php");
+		$class_names = OOJSMVC::$class_names;
 		$javascript = "";
 
 		foreach ($class_names as $key => $value) {
@@ -74,10 +77,7 @@ class OOJSMVC{
 			$javascript .= "\twindow.oojsmvc.".get_class($class)."= new ".get_class($class)."();\n";
 
 			//add implements code
-			$javascript .= $instance->_javascript;
-			
-			
-			$classes[] = $class;
+			$javascript .= $instance->_javascript;			
 		}
 
 		//add to vanilla javascript
@@ -89,15 +89,25 @@ class OOJSMVC{
 	public static function generateJavascriptFromFunctionString($method_body){
 		$tokens = token_get_all("<?php ".$method_body." ?>");
 		$javascript = "";
-		//echo "token name:".token_name(310)."\n";
+		echo "token name:".token_name(310)."\n";
 		foreach ($tokens as $token) {  
-			// echo print_r($token, true);
+			echo print_r($token, true)."\n";
 			if(is_int($token[0])){
 				// echo token_name($token[0])." ".$token[1]."\n";
 				switch($token[0]){
 					case T_OPEN_TAG:
 						break;					
 					case T_CLOSE_TAG:
+						break;
+					case T_COMMENT:
+						break;
+
+					case T_STRING:
+						if(in_array($token[1], OOJSMVC::$class_names)){
+							$javascript .= "oojsmvc.".$token[1].".element";
+						}else{
+							$javascript .= $token[1];
+						}
 						break;
 					case T_VARIABLE:
 						if($token[1] == "\$this")
@@ -124,10 +134,6 @@ class OOJSMVC{
 }
 
 
-class CoreEvent{
-	public function preventDefault(){}
-}
-
 
 class CoreModule{
 	public $value = "";
@@ -150,6 +156,12 @@ class CoreModule{
 	public function _generateJavascript(){
 		echo get_class_methods($this);
 	}
+}
+
+function render_template($template, $parameters){
+	ob_start();
+	require $templates;
+	return ob_get_clean();
 }
 
 function get_class_method_body($class, $function){

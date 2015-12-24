@@ -1,20 +1,17 @@
-<?php  
-
-require "CoreModule.php";
-require 'Model.php';
+<?php 
 
 class OOJSMVC{
 
-	private $modules = [];
+	public function __construct(){
+
+	}
 
 	public static function generateJavascript(){
 		$oojsmvc = new OOJSMVC;
-		$javascript = $oojsmvc->generateJavasciptFromModules();
-		file_put_contents("oojsmvc.js", $javascript);
-		return $javascript;
+		return generateJavascriptFromModules();
 	}
 
-	public function generateJavasciptFromModules(){
+	private function generateJavascriptFromModules(){
 		$generated_code = "";
 		$files = scandir("modules");
 		foreach ($files as $module_file ) {
@@ -34,11 +31,6 @@ class OOJSMVC{
 		$this->modules[$class_name] = new $class_name;
 		return $module_file;
 	}
-
 }
-
-
-
-
 
 ?>
