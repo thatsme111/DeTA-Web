@@ -1,6 +1,8 @@
 <?php 
 session_start();
 
+require 'lib/oojsmvc.php';
+
 $_SESSION['usernmae'] = "thatsme";
 
 ?>

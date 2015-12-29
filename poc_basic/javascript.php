@@ -15,22 +15,22 @@ session_start();
 		return document.getElementById(id).getAttribute(attribute);
 	}
 
-	function getProperty(id, property){
+	function getProperty(eventId, elementId, property){
 		var data = "";
 		switch(property){
-			case "innerHTML": data = document.getElementById(id).innerHTML;
+			case "innerHTML": data = document.getElementById(elementId).innerHTML;
 				break;
 		}
 
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (xhttp.readyState == 4 && xhttp.status == 200) {
-				console.log("getProperty_response:"+xhttp.responseText);
+				console.log("post response:"+xhttp.responseText);
 			}
 		};
 		xhttp.open("POST", "lib/EventSourceHandler.php", true);
 		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		xhttp.send("data="+data);
+		xhttp.send("eventId="+eventId+"&response="+data);
 	}
 
 	function setProperty(id, property, value){
@@ -43,10 +43,12 @@ session_start();
 	if(typeof(EventSource) !== "undefined") {
 	    var source = new EventSource("lib/EventSourceHandler.php");
 	    source.onmessage = function(event) {
-	    	// console.log(event.data);
-	    	eval(event.data);
-	    	//(function(){console.log(getAttribute('message',));})();
-	        //document.getElementById("message").innerHTML += event.data + "<br>";
+	    	// var value = eval(event.data);
+	    	if(event.data !== ""){
+	    		eval(event.data);
+	    		console.log(event.data);
+	    	}
+	    		
 	    };
 	}else{
 	    document.getElementById("message").innerHTML = "Sorry, your browser does not support server-sent events...";

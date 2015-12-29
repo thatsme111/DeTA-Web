@@ -1,5 +1,38 @@
 <?php 
 
+class BaseModel{
+	private $_id;
+	public function __construct($id){
+		$this->_id = $id;
+	}
+	public function getId(){
+		return $this->_id;
+	}
+	public function getProperty($property){
+		//create event
+		$event_string = "getProperty(".$this->_id.",$property)";
+		//add to event array
+		if(!isset($_SESSION['event']))
+			$_SESSION['event'] = [];
+		array_push($_SESSION['event'], array( "request"=>$event_string));
+		//get current event index
+		end($_SESSION['event']);
+		$index = key($_SESSION);
+		//until repose is set loop
+		while(!isset($_SESSION['oojsmvc'][$index]["response"]));
+		//remove event 
+		unset($_SESSION['oojsmvc'][$index]);	
+		//return response
+		return $_SESSION['oojsmvc'][$index]["response"];
+	}
+
+}
+
+class BaseModule{
+	
+	
+}
+
 class OOJSMVC{
 
 	public function __construct(){
@@ -8,7 +41,7 @@ class OOJSMVC{
 
 	public static function generateJavascript(){
 		$oojsmvc = new OOJSMVC;
-		return generateJavascriptFromModules();
+		return $oojsmvc->generateJavascriptFromModules();
 	}
 
 	private function generateJavascriptFromModules(){
