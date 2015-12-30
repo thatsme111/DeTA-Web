@@ -1,0 +1,3 @@
+Class Person{
+	var name;
+}
