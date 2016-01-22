@@ -1,0 +1,52 @@
+<?php session_start(); ?>
+<html>
+<head>
+	<title>DeTA Web</title>
+	<script type="text/javascript">
+
+		addEventListener("DOMContentLoaded", function(event){
+			var xhttp = new XMLHttpRequest();
+			var base  = "http://localhost/test/php/DeTAWeb/poc_serialization/base.php";
+			//note synchronous or asynchronous
+			xhttp.open("GET", base, true);
+			xhttp.send();
+		});
+
+		var eventSource = new EventSource("http://localhost/test/php/DeTAWeb/poc_serialization/RequestHandler.php");
+
+		//read request and process it and then send response to responseHandler
+		eventSource.onmessage = function(event){
+			var request = JSON.parse(event.data);
+			console.log(request);
+			if(request.action == "GET"){
+				var command = "document.querySelector(\""+request.selector+"\")."+request.property;
+				var response = eval(command);
+				this.send(request.event_id, response);
+			}
+			if(request.action == "SET"){
+				var command = "document.querySelector(\""+request.selector+"\")."+request.property+"='"+request.value+"'";
+				eval(command);
+				this.send(request.event_id, "done");
+			}
+			if(request.action == "EXEC"){
+				eval(request.command);
+				this.send(request.event_id, "done");
+			}
+		};
+
+		//send response and check response type
+		eventSource.send = function(event_id, response){
+			var responseHandler = "http://localhost/test/php/DeTAWeb/poc_serialization/ResponseHandler.php";
+			var xhttp = new XMLHttpRequest();
+			xhttp.open("POST", responseHandler, true);
+			xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhttp.send("event_id="+event_id+"&response="+response);
+		} 
+		
+	</script>
+</head>
+<body>
+	<input type="text" id="message" value="thatsme">
+	<div id="board"></div>
+</body>
+</html>
